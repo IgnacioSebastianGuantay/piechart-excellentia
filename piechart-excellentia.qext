@@ -1,0 +1,15 @@
+{
+    "name": "piechart-excellentia",
+    "description": "Gráfico circular de progreso para una sola métrica (0-100%)",
+    "type": "visualization",
+    "version": "1.0.0",
+    "icon": "pie-chart",
+    "author": "Excellentia Data",
+    "homepage": "",
+    "keywords": "qlik-sense, visualization, pie, progress, kpi",
+    "license": "",
+    "repository": "",
+    "dependencies": {
+        "qlik-sense": ">=3.0.x"
+    }
+}
