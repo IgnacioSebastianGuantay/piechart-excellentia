@@ -32,6 +32,23 @@ define([], function() {
           }
         }
       },
+      data: {
+        type: "items",
+        label: "Datos",
+        items: {
+          measureFormat: {
+            ref: "props.measureFormat",
+            label: "Formato de Medida",
+            type: "string",
+            component: "dropdown",
+            options: [
+              { value: "decimal", label: "Decimal (0.85 = 85%, 1.4 = 140%)" },
+              { value: "percentage", label: "Porcentaje (85 = 85%, 140 = 140%)" }
+            ],
+            defaultValue: "decimal"
+          }
+        }
+      },
       design: {
         type: "items",
         label: "Diseño",

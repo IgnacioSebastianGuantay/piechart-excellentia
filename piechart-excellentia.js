@@ -20,6 +20,7 @@ define([
         }]
       },
       props: {
+        measureFormat: "decimal",
         progressColor: "#D32F2F",
         backgroundColor: "#E0E0E0",
         overflowColor: "#FF6F00",
@@ -52,6 +53,7 @@ define([
       var progressColor = props.progressColor || '#D32F2F';
       var backgroundColor = props.backgroundColor || '#E0E0E0';
       var overflowColor = props.overflowColor || '#FF6F00';
+      var measureFormat = props.measureFormat || 'decimal';
       var strokeWidth = props.strokeWidth || 12;
       var showPercentage = props.showPercentage !== false;
       var fontSize = props.fontSize || 24;
@@ -78,15 +80,15 @@ define([
         value = 0;
       }
 
-      // Detectar formato y normalizar a porcentaje real (puede superar 100)
+      // Normalizar según formato configurado (sin auto-detección)
       var rawPercentage;
-      if (value >= 0 && value <= 1) {
-        rawPercentage = value * 100;
-      } else if (value > 1) {
+      if (measureFormat === 'percentage') {
         rawPercentage = value;
       } else {
-        rawPercentage = 0;
+        // decimal: 0.85 = 85%, 1.4 = 140%
+        rawPercentage = value * 100;
       }
+      if (rawPercentage < 0) rawPercentage = 0;
 
       var isOverflow = rawPercentage > 100;
       var displayPercentage = isOverflow ? 100 : rawPercentage;
