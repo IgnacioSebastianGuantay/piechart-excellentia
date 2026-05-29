@@ -22,6 +22,7 @@ define([
       props: {
         progressColor: "#D32F2F",
         backgroundColor: "#E0E0E0",
+        overflowColor: "#FF6F00",
         strokeWidth: 12,
         showPercentage: true,
         fontSize: 24,
@@ -50,6 +51,7 @@ define([
       var props = layout.props || {};
       var progressColor = props.progressColor || '#D32F2F';
       var backgroundColor = props.backgroundColor || '#E0E0E0';
+      var overflowColor = props.overflowColor || '#FF6F00';
       var strokeWidth = props.strokeWidth || 12;
       var showPercentage = props.showPercentage !== false;
       var fontSize = props.fontSize || 24;
@@ -76,24 +78,19 @@ define([
         value = 0;
       }
 
-      // ✨ NUEVA LÓGICA: Detectar formato y normalizar a porcentaje 0-100
-      var percentage;
-      if (value <= 1 && value >= 0) {
-        // Formato decimal (0.5 = 50%, 0.75 = 75%)
-        percentage = value * 100;
-      } else if (value > 1 && value <= 100) {
-        // Formato porcentaje (50 = 50%, 75 = 75%)
-        percentage = value;
-      } else if (value > 100) {
-        // Valor fuera de rango superior, limitar a 100%
-        percentage = 100;
+      // Detectar formato y normalizar a porcentaje real (puede superar 100)
+      var rawPercentage;
+      if (value >= 0 && value <= 1) {
+        rawPercentage = value * 100;
+      } else if (value > 1) {
+        rawPercentage = value;
       } else {
-        // Valor negativo, poner en 0%
-        percentage = 0;
+        rawPercentage = 0;
       }
 
-      // Asegurar rango final 0-100
-      percentage = Math.min(100, Math.max(0, percentage));
+      var isOverflow = rawPercentage > 100;
+      var displayPercentage = isOverflow ? 100 : rawPercentage;
+      var overflowPercentage = isOverflow ? rawPercentage % 100 : 0;
 
       // Obtener el label de la medida (opcional)
       var measureLabel = layout.qHyperCube.qMeasureInfo[0].qFallbackTitle;
@@ -101,7 +98,8 @@ define([
       // Calcular matemática del círculo
       var radius = 45 - (strokeWidth / 2);
       var circumference = 2 * Math.PI * radius;
-      var offset = circumference - (percentage / 100) * circumference;
+      var offset = circumference - (displayPercentage / 100) * circumference;
+      var overflowOffset = circumference - (overflowPercentage / 100) * circumference;
 
       // Construir HTML
       var html = '<div class="progress-pie-container">';
@@ -134,7 +132,25 @@ define([
       html += 'data-offset="' + offset + '" ';
       html += 'style="transition: stroke-dashoffset ' + animationDuration + 'ms ease"';
       html += '/>';
-      
+
+      // Arco de overflow (solo cuando supera el 100%)
+      if (isOverflow) {
+        html += '<circle ';
+        html += 'cx="50" cy="50" ';
+        html += 'r="' + radius + '" ';
+        html += 'stroke="' + overflowColor + '" ';
+        html += 'stroke-width="' + strokeWidth + '" ';
+        html += 'fill="none" ';
+        html += 'stroke-dasharray="' + circumference + '" ';
+        html += 'stroke-dashoffset="' + circumference + '" ';
+        html += 'stroke-linecap="' + (roundedCaps ? 'round' : 'butt') + '" ';
+        html += 'transform="rotate(-90 50 50)" ';
+        html += 'class="overflow-circle" ';
+        html += 'data-offset="' + overflowOffset + '" ';
+        html += 'style="transition: stroke-dashoffset ' + animationDuration + 'ms ease"';
+        html += '/>';
+      }
+
       // Texto central (porcentaje)
       if (showPercentage) {
         html += '<text ';
@@ -145,7 +161,7 @@ define([
         html += 'font-size="' + fontSize + '" ';
         html += 'fill="#333333"';
         html += '>';
-        html += percentage.toFixed(0) + '%';
+        html += rawPercentage.toFixed(0) + '%';
         html += '</text>';
       }
       
@@ -163,11 +179,15 @@ define([
       // Inyectar HTML
       $element.html(html);
 
-      // Animar el círculo de progreso después del render
+      // Animar los círculos después del render
       setTimeout(function() {
         var circle = $element.find('.progress-circle');
         if (circle.length) {
           circle.css('stroke-dashoffset', offset);
+        }
+        var overflowCircle = $element.find('.overflow-circle');
+        if (overflowCircle.length) {
+          overflowCircle.css('stroke-dashoffset', overflowOffset);
         }
       }, 50);
 

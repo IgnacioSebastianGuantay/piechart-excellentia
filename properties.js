@@ -22,6 +22,13 @@ define([], function() {
             type: "string",
             expression: "optional",
             defaultValue: "#E0E0E0"
+          },
+          overflowColor: {
+            ref: "props.overflowColor",
+            label: "Color Excedente (>100%)",
+            type: "string",
+            expression: "optional",
+            defaultValue: "#FF6F00"
           }
         }
       },

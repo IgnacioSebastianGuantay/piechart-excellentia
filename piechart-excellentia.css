@@ -28,6 +28,11 @@
   transition: stroke-dashoffset 0.5s ease;
 }
 
+/* Arco de overflow (valores >100%) */
+.overflow-circle {
+  transition: stroke-dashoffset 0.5s ease;
+}
+
 /* Texto del porcentaje */
 .percentage-text {
   font-family: 'QlikView Sans', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
